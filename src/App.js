@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import './App.css'
+import Navigation from './components/Navigation/Navigation'
+import { ThemeContext } from './ThemeContext'
+import Main from './Main/Main'
+import Login from './Login/Login'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from './Firebase'
 
 function App() {
+  const [DarkTheme, setDarkTheme] = useState(true)
+  const [LoggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <ThemeContext.Provider value={{ DarkTheme, setDarkTheme }}>
+      <div className='App'>
+        {LoggedIn ? (
+          <>
+            <Navigation />
+            <Main />
+          </>) : (
+          <Login />
+        )}
+
+
+      </div>
+    </ThemeContext.Provider>
+  )
 }
 
-export default App;
+export default App
